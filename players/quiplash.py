@@ -10,7 +10,7 @@ Strategy:
 
 import random
 from time import sleep
-from player import Player
+from players.player import Player
 
 ANSWERS = []
 

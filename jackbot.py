@@ -7,8 +7,8 @@ Python bot that can play a game of Jackbox using Selenium
 '''
 
 
-from quiplash import QuiplashXL
-from fibbage import FibbageXL, Fibbage2
+from players.quiplash import QuiplashXL
+from players.fibbage import FibbageXL, Fibbage2
 from threading import Thread
 import random
 

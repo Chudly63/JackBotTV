@@ -10,7 +10,7 @@ Strategy:
     When liking other responses, pick lies that contain terms that robots like
 '''
 from time import sleep
-from player import Player
+from players.player import Player
 
 
 termsRobotsLike = [
