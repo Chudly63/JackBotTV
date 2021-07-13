@@ -53,6 +53,7 @@ roomCode = input("Enter room code: ")
 
 random.shuffle(ROBOT_NAMES)
 
+print(f"Starting {playerCount} bots...")
 for i in range(0, playerCount):
     newThread = Thread(target=playBall, args=(roomCode,ROBOT_NAMES[i], PLAYER_CLASSES[gameSelect-1]))
     PLAYER_THREADS.append(newThread)

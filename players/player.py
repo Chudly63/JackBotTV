@@ -15,12 +15,14 @@ import random
 class Player():
     
     def login(self, code, name):
+        self.name = name
         self.driver = webdriver.Firefox()
         self.driver.get("https://jackbox.tv/")
         sleep(1)
         self.driver.find_element_by_id('roomcode').send_keys(code)
         self.driver.find_element_by_id("username").send_keys(name)
         self.driver.find_element_by_id("button-join").click()
+        print(f"Player {name} has connected!")
         sleep(5)
 
     #Gets a list of buttons with the class name `buttonClass`
@@ -44,11 +46,26 @@ class Player():
             titles = self.driver.find_elements_by_id("swal2-title")
             for title in titles:
                 if "DISCONNECTED" in title.text.upper() and title.is_displayed():
-                    print("Disconnected - Game Over")
+                    print(f"Player {self.name} has disconnected!")
                     return True
         except Exception as e:
             print(e)
             pass
 
+
+        return False
+
+    #Check to see if the "Everyone's In" button appears on the bot's UI
+    #If it does, then the bot will wait for confirmation from the user before starting the game
+    def checkForEveryoneIn(self, elementId):
+        try:
+            everyoneIn = self.driver.find_element_by_id(elementId)
+            if(everyoneIn.is_enabled() and everyoneIn.is_displayed()):
+                input("Press enter to start the game!")
+                everyoneIn.click()
+                return True
+        except Exception as e:
+            print(e)
+            pass
 
         return False

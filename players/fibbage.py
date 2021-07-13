@@ -31,21 +31,6 @@ class FibbagePlayer(Player):
     def checkForSoundSelect(self):
         return self.clickRandom("fibbage-bloop-button")
 
-    #Check to see if the "Everyone's In" button appears on the bot's UI
-    #If it does, then the bot will wait for confirmation from the user before starting the game
-    def checkForEveryoneIn(self):
-        try:
-            everyoneIn = self.driver.find_element_by_id("fibbage-startgame")
-            if(everyoneIn.is_enabled() and everyoneIn.is_displayed()):
-                input("Press enter to start the game!")
-                everyoneIn.click()
-                return True
-        except Exception as e:
-            print(e)
-            pass
-
-        return False
-
     def checkForCategorySelect(self):
         return self.clickRandom("fibbage-category-button")
 
@@ -134,7 +119,7 @@ class Fibbage2(FibbagePlayer):
         while(gameOn):
             if not gameStarted:
                 self.checkForSoundSelect()
-                self.checkForEveryoneIn()
+                self.checkForEveryoneIn("fibbage-startgame")
             
             if self.checkForLie() or self.checkForVote():
                 gameStarted = True

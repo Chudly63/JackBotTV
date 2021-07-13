@@ -28,21 +28,6 @@ class QuiplashPlayer(Player):
     def __init__(self, code, name):
         self.login(code, name)
 
-    #Check to see if the "Everyone's In" button appears on the bot's UI
-    #If it does, then the bot will wait for confirmation from the user before starting the game
-    def checkForEveryoneIn(self):
-        try:
-            everyoneIn = self.driver.find_element_by_id("quiplash-startgame")
-            if(everyoneIn.is_enabled() and everyoneIn.is_displayed()):
-                input("Press enter to start the game!")
-                everyoneIn.click()
-                return True
-        except Exception as e:
-            print(e)
-            pass
-
-        return False
-
     #Check to see if a question is present on the bot's UI
     #If so, the bot writes an answer and submits
     def checkForQuestion(self):
@@ -92,7 +77,7 @@ class QuiplashXL(QuiplashPlayer):
         gameStarted = False
         while(gameOn):
             if not gameStarted:
-                self.checkForEveryoneIn()
+                self.checkForEveryoneIn("quiplash-startgame")
             
             if self.checkForQuestion() or self.checkForVote():
                 gameStarted = True
