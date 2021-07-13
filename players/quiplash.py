@@ -11,11 +11,17 @@ Strategy:
 import random
 from time import sleep
 from players.player import Player
+from os.path import realpath
 
 ANSWERS = []
 
-with open("C:/Users/chud6/Documents/JackBot/resources/quips.txt", "r") as quips:
+#Reads a list of potential submissions from a text file 
+#in a resources directory found within the same directory as jackbot.py
+FILE_PATH = realpath(__file__)
+with open(f"{FILE_PATH}/../../resources/quips.txt", "r") as quips:
     ANSWERS = quips.read().splitlines()
+
+print(ANSWERS[0])
 
 class QuiplashPlayer(Player):
 
