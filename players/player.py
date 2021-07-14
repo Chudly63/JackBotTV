@@ -23,14 +23,26 @@ class Player():
         self.driver.find_element_by_id("username").send_keys(name)
         self.driver.find_element_by_id("button-join").click()
         print(f"Player {name} has connected!")
-        sleep(5)
+        sleep(2)
+
+    def getActiveButtonsByClass(self, buttonClass):
+        try:
+            activeButtons = []
+            buttons = self.driver.find_elements_by_class_name(buttonClass)
+            for button in buttons:
+                if button.is_enabled() and button.is_displayed():
+                    activeButtons.append(button)
+            return activeButtons
+        except Exception as e:
+            print(e)
+            pass
 
     #Gets a list of buttons with the class name `buttonClass`
     #If the list is not empty, and the buttons are enabled/displayed, click a random one
     def clickRandom(self, buttonClass):
         try:
-            buttons = self.driver.find_elements_by_class_name(buttonClass)
-            if(len(buttons) > 0 and buttons[0].is_enabled() and buttons[0].is_displayed()):
+            buttons = self.getActiveButtonsByClass(buttonClass)
+            if(len(buttons) > 0):
                 random.choice(buttons).click()
                 return True
         except Exception as e:

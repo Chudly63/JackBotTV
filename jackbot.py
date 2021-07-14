@@ -7,8 +7,9 @@ Python bot that can play a game of Jackbox using Selenium
 '''
 
 
-from players.quiplash import QuiplashXL
-from players.fibbage import FibbageXL, Fibbage2
+from players.guesspionage.guesspionage import Guesspionage
+from players.quiplash.quiplash import QuiplashXL
+from players.fibbage.fibbage import FibbageXL, Fibbage2
 from threading import Thread
 import random
 
@@ -25,7 +26,7 @@ ROBOT_NAMES = [
     "Gene",
     "Rando",
     "g00seMoo$e",
-    "ZipZapZop",
+    "ZipZapZorp",
     "Krunk",
     "Bebeaked"
 ]
@@ -33,7 +34,8 @@ ROBOT_NAMES = [
 PLAYER_CLASSES = [
     QuiplashXL,
     FibbageXL,
-    Fibbage2
+    Fibbage2,
+    Guesspionage
 ]
 
 def playBall(code, name, playerClass):

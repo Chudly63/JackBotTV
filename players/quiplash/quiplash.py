@@ -18,7 +18,7 @@ ANSWERS = []
 #Reads a list of potential submissions from a text file 
 #in a resources directory found within the same directory as jackbot.py
 FILE_PATH = realpath(__file__)
-with open(f"{FILE_PATH}/../../resources/quips.txt", "r") as quips:
+with open(f"{FILE_PATH}/../../../resources/quips.txt", "r") as quips:
     ANSWERS = quips.read().splitlines()
 
 print(ANSWERS[0])
