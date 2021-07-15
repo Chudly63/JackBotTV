@@ -16,7 +16,7 @@ Strategies:
 '''
 from selenium.webdriver.common.action_chains import ActionChains
 from players.player import Player
-from players.guesspionage.strategies import SafeGuesser, RandomGuesser, MajorityVoter, RandomVoter, WildGuesser
+from players.guesspionage.strategies import RiskyVoter, SafeGuesser, RandomGuesser, MajorityVoter, RandomVoter, WildGuesser
 from time import sleep
 import random
 
@@ -28,20 +28,44 @@ GUESSING_STRAGEIES = [
 
 VOTING_STRAGETIES = [
     MajorityVoter,
-    RandomVoter
+    RandomVoter,
+    RiskyVoter
 ]
 
 class GuesspionagePlayer(Player):
 
     def __init__(self, code, name):
         self.login(code, name)
-        self.checkForCharacterSelect()
+        self.checkForCharacterSelect("robot")
+        while(not self.isCharacterSelected()):
+            self.checkForCharacterSelect()
         self.guessingStrategy = random.choice(GUESSING_STRAGEIES)(self.driver)
         self.votingStrategy = random.choice(VOTING_STRAGETIES)(self.driver)
+
+        print(f"{name} {self.guessingStrategy.describe()} and {self.votingStrategy.describe()}")
+
+    def isCharacterSelected(self):
+        try:
+            character = self.driver.find_element_by_id("pollposition-character")
+            return character.is_displayed()
+        except:
+            pass
+        return False
     
-    def checkForCharacterSelect(self):
-        self.clickRandom("pollposition-character-button")
-        self.characterSelected = True
+    def checkForCharacterSelect(self, preference=None):
+        if preference:
+            try:
+                characterButtons = self.getActiveButtonsByClass("pollposition-character-button")
+                for button in characterButtons:
+                    if button.get_attribute("aria-label") == preference.lower():
+                        button.click()
+                        return True
+            except Exception as e:
+                pass
+        else:
+            return self.clickRandom("pollposition-character-button")
+        
+        return False
 
     def checkForFinalRound(self):
         try:
@@ -50,7 +74,7 @@ class GuesspionagePlayer(Player):
                 random.choice(choices).click()
                 return True
         except Exception as e:
-            print(e)
+            print(f"Check for final round {e}")
             pass
 
         return False
@@ -69,7 +93,7 @@ class GuesspionagePlayer(Player):
 
                 return True
         except Exception as e:
-            print(e)
+            print(f"Check for play again {e}")
             pass
 
 

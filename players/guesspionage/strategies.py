@@ -6,10 +6,22 @@ from re import findall, match
 
 
 #Guesses a random percentage
-class RandomGuesser(Player):
+
+class Guesser(Player):
+
+    def makeGuess(self):
+        pass
+
+    def describe(self):
+        return "has no identity"
+
+class RandomGuesser(Guesser):
 
     def __init__(self, driver):
         self.driver = driver
+
+    def describe(self):
+        return "guesses as the winds guide them"
 
     def makeGuess(self):
         try:
@@ -24,7 +36,7 @@ class RandomGuesser(Player):
                     action.click()
                     action.perform()
                     sleep(3)
-                    if(random.randint(0,2) == 1):
+                    if(random.randint(0,2) < 2):
                         self.driver.find_element_by_id("pollposition-submitpercentage").click()
                         return True
 
@@ -36,10 +48,13 @@ class RandomGuesser(Player):
 
 
 #Always hovers around the 50% mark
-class SafeGuesser(Player):
+class SafeGuesser(Guesser):
 
     def __init__(self, driver):
         self.driver = driver
+
+    def describe(self):
+        return "runs it down the middle"
 
     def makeGuess(self):
         try:
@@ -65,10 +80,13 @@ class SafeGuesser(Player):
 
 
 #Always guesses > 75% or < 25%
-class WildGuesser(Player):
+class WildGuesser(Guesser):
 
     def __init__(self, driver):
         self.driver = driver
+
+    def describe(self):
+        return "loves chaos"
 
     def makeGuess(self):
         try:
@@ -86,7 +104,7 @@ class WildGuesser(Player):
                 return True
 
         except Exception as e:
-            print(e)
+            print(f"Wild guess {e}")
             pass
 
         return False
@@ -95,44 +113,30 @@ class WildGuesser(Player):
 
 # VOTING STRATEGIES
 
-
-#Votes for a random option
-class RandomVoter(Player):
+class Voter(Player):
 
     def __init__(self, driver):
         self.driver = driver
-
+    
     def makeVote(self):
-        self.clickRandom("pollposition-high-low-button")
+        pass
 
-#Votes for the option with the highest probability of being correct
-class MajorityVoter(Player):
+    def describe(self):
+        return "doesn't partake in politics"
 
-    def __init__(self, driver):
-        self.driver = driver
-
-    def makeVote(self):
+    def getGuessPercentage(self):
         try:
             elements = self.driver.find_elements_by_class_name("pollposition-text.question-text")
-            question = ""
             for element in elements:
                 if match("^.*said \d+%.*$", element.text):
-                    question = element.text
-                    break
-            if(len(question) > 0):
-                numbers = [int(s) for s in findall(r'\b\d+\b', question)]
-                if(len(numbers) > 0):
-                    percentage = numbers[-1]
-                    if(percentage <= 50):
-                        self.voteFor("Higher")
-                    else:
-                        self.voteFor("Lower")
-
+                    numbers = [int(s) for s in findall(r'\b\d+\b', element.text)]
+                    if(len(numbers) > 0):
+                        return numbers[-1]
         except Exception as e:
-            print(e)
+            print(f"Get Guess Percentage {e}")
             pass
 
-        return False
+        return None
 
     def voteFor(self, vote):
         try:
@@ -140,8 +144,75 @@ class MajorityVoter(Player):
             for button in buttons:
                 if button.get_attribute("data-choice")==vote:
                     button.click()
+                    return True
         except Exception as e:
-            print(e)
+            print(f"Vote For {e}")
             pass
 
         return False
+
+    def areMuchOptionsAvailable(self):
+        try:
+            return len(self.getActiveButtonsByClass("pollposition-choice-button")) == 4
+        except:
+            return False
+
+#Votes for a random option
+class RandomVoter(Voter):
+
+    def __init__(self, driver):
+        self.driver = driver
+
+    def describe(self):
+        return "clicks the first button they see"
+
+    def makeVote(self):
+        self.clickRandom("pollposition-high-low-button")
+
+
+#Votes for the option with the highest probability of being correct
+class MajorityVoter(Voter):
+
+    def __init__(self, driver):
+        self.driver = driver
+
+    def describe(self):
+        return "likes to play it safe"
+
+    def makeVote(self):
+        try:
+            percentage = self.getGuessPercentage()
+            if(percentage == None):
+                return False
+            elif(percentage <= 50):
+                self.voteFor("Higher")
+            else:
+                self.voteFor("Lower")
+
+        except Exception as e:
+            print(f"Majority Vote {e}")
+            pass
+
+        return False
+
+
+#Always votes much higher or much lower if those options are available
+class RiskyVoter(Voter):
+
+    def describe(self):
+        return "ain't afraid to double-down"
+
+    def makeVote(self):
+        percentage = self.getGuessPercentage()
+        if(percentage == None):
+            return False
+        elif(percentage <= 50):
+            if(self.areMuchOptionsAvailable()):
+                self.voteFor("Much_Higher")
+            else:
+                self.voteFor("Higher")
+        else:
+            if(self.areMuchOptionsAvailable()):
+                self.voteFor("Much_Lower")
+            else:
+                self.voteFor("Lower")
