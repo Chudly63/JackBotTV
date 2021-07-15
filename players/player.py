@@ -38,8 +38,6 @@ class Player():
             if not username.get_attribute('value').upper() == name.upper():
                 username.clear()
                 username.send_keys(name)
-            print(f"{roomcode.get_attribute('value')},{username.get_attribute('value')}")
-            print(f"{code},{name}")
             return (roomcode.get_attribute('value').upper() == code.upper() and username.get_attribute('value').upper() == name.upper())
         except Exception as e:
             print(f"Enter Details {e}")
@@ -68,7 +66,6 @@ class Player():
                     activeButtons.append(button)
             return activeButtons
         except Exception as e:
-            print(f"Get Active Buttons By Class {buttonClass} {e}")
             pass
         return []
 
@@ -81,7 +78,6 @@ class Player():
                 random.choice(buttons).click()
                 return True
         except Exception as e:
-            print(f"Click Random {buttonClass} {e}")
             pass
 
         return False

@@ -5,8 +5,6 @@ from time import sleep
 from re import findall, match
 
 
-#Guesses a random percentage
-
 class Guesser(Player):
 
     def makeGuess(self):
@@ -15,6 +13,7 @@ class Guesser(Player):
     def describe(self):
         return "has no identity"
 
+#Guesses a random percentage
 class RandomGuesser(Guesser):
 
     def __init__(self, driver):

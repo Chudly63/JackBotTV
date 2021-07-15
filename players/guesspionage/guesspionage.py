@@ -12,6 +12,7 @@ Strategies:
     Voting Strategies   (Much Higher, Higher, Lower, or Much Lower)
         1. MajorityVoter - Choose the option with the greatest probability of being correct
         2. RandomVoter - Choose a random option
+        3. RiskyVoter - Like the MajorityVoter, but will always pick Much Higher or Much Lower if available
     Final Round - Choose three random options
 '''
 from selenium.webdriver.common.action_chains import ActionChains
