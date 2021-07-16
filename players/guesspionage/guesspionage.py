@@ -9,28 +9,33 @@ Strategies:
         1. SafeGuesser - Choose a percentage near 50%
         2. RandomGuesser - Choose a random percentage
         3. WildGuesser - Choose a percentage > 75% or < 25%
+        4. IndecisiveGuesser - Keep choosing random percentages until time runs out
     Voting Strategies   (Much Higher, Higher, Lower, or Much Lower)
         1. MajorityVoter - Choose the option with the greatest probability of being correct
         2. RandomVoter - Choose a random option
         3. RiskyVoter - Like the MajorityVoter, but will always pick Much Higher or Much Lower if available
+        4. EvenStevenVoter - Votes Higher on even guesses and Lower on odd guesses
+        5. RouletteVoter - Makes a random guess of their own, and then votes for it
     Final Round - Choose three random options
 '''
-from selenium.webdriver.common.action_chains import ActionChains
 from players.player import Player
-from players.guesspionage.strategies import RiskyVoter, SafeGuesser, RandomGuesser, MajorityVoter, RandomVoter, WildGuesser
+from players.guesspionage.strategies import *
 from time import sleep
 import random
 
 GUESSING_STRAGEIES = [
     SafeGuesser,
     RandomGuesser,
-    WildGuesser
+    WildGuesser,
+    IndecisiveGuesser
 ]
 
 VOTING_STRAGETIES = [
     MajorityVoter,
     RandomVoter,
-    RiskyVoter
+    RiskyVoter,
+    EvenStevenVoter,
+    RouletteVoter
 ]
 
 class GuesspionagePlayer(Player):

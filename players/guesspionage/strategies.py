@@ -1,11 +1,14 @@
 import random
 from players.player import Player
 from selenium.webdriver.common.action_chains import ActionChains
-from time import sleep
+from time import perf_counter, sleep
 from re import findall, match
 
 
 class Guesser(Player):
+
+    def __init__(self, driver):
+        self.driver = driver
 
     def makeGuess(self):
         pass
@@ -15,9 +18,6 @@ class Guesser(Player):
 
 #Guesses a random percentage
 class RandomGuesser(Guesser):
-
-    def __init__(self, driver):
-        self.driver = driver
 
     def describe(self):
         return "guesses as the winds guide them"
@@ -49,9 +49,6 @@ class RandomGuesser(Guesser):
 #Always hovers around the 50% mark
 class SafeGuesser(Guesser):
 
-    def __init__(self, driver):
-        self.driver = driver
-
     def describe(self):
         return "runs it down the middle"
 
@@ -81,9 +78,6 @@ class SafeGuesser(Guesser):
 #Always guesses > 75% or < 25%
 class WildGuesser(Guesser):
 
-    def __init__(self, driver):
-        self.driver = driver
-
     def describe(self):
         return "loves chaos"
 
@@ -105,6 +99,33 @@ class WildGuesser(Guesser):
         except Exception as e:
             print(f"Wild guess {e}")
             pass
+
+        return False
+
+
+#Keeps changing their guess and never locks in
+class IndecisiveGuesser(Guesser):
+
+    def describe(self):
+        return "hates commitment"
+
+    def makeGuess(self):
+        try:
+            wheel = self.driver.find_element_by_id("pollposition-percentage-picker")
+
+            if(wheel.is_displayed()):
+                while(True):
+                    offset1 = random.randint(0,int(wheel.size["width"]))
+                    offset2 = random.randint(0,int(wheel.size["height"]))
+                    action = ActionChains(self.driver)
+                    action.move_to_element_with_offset(wheel, offset1, offset2)
+                    action.click()
+                    action.perform()
+                    sleep(2)
+
+        except Exception as e:
+            print(e)
+            return 
 
         return False
 
@@ -159,9 +180,6 @@ class Voter(Player):
 #Votes for a random option
 class RandomVoter(Voter):
 
-    def __init__(self, driver):
-        self.driver = driver
-
     def describe(self):
         return "clicks the first button they see"
 
@@ -171,9 +189,6 @@ class RandomVoter(Voter):
 
 #Votes for the option with the highest probability of being correct
 class MajorityVoter(Voter):
-
-    def __init__(self, driver):
-        self.driver = driver
 
     def describe(self):
         return "likes to play it safe"
@@ -187,6 +202,7 @@ class MajorityVoter(Voter):
                 self.voteFor("Higher")
             else:
                 self.voteFor("Lower")
+            return True
 
         except Exception as e:
             print(f"Majority Vote {e}")
@@ -215,3 +231,41 @@ class RiskyVoter(Voter):
                 self.voteFor("Much_Lower")
             else:
                 self.voteFor("Lower")
+        return True
+
+#Votes up on even responses and down on odd responses
+class EvenStevenVoter(Voter):
+
+    def describe(self):
+        return "doesn't like your odds"
+
+    def makeVote(self):
+        percentage = self.getGuessPercentage()
+        if(percentage == None):
+            return False
+        elif(percentage % 2 == 0):
+            self.voteFor("Higher")
+        else:
+            self.voteFor("Lower")
+        return True
+
+#Picks a random percentage, and then votes for whatever option matches it
+class RouletteVoter(Voter):
+
+    def describe(self):
+        return "is ready to SPIN. THAT. WHEEL!"
+
+    def makeVote(self):
+        spin = random.randint(0,100)
+        percentage = self.getGuessPercentage()
+        if(percentage == None):
+            return False
+        elif(spin + 15 < percentage):
+            self.voteFor("Much_Lower")
+        elif(spin - 15 > percentage):
+            self.voteFor("Mush_Higher")
+        elif(spin < percentage):
+            self.voteFor("Lower")
+        else:
+            self.voteFor("Higher")
+        return True
