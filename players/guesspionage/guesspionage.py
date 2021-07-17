@@ -106,6 +106,12 @@ class GuesspionagePlayer(Player):
 
 class Guesspionage(GuesspionagePlayer):
 
+    def details():
+        return {
+            "name": "Guesspionage",
+            "pack": "JackBox Party Pack 3"
+        }
+
     def play(self):
         gameStarted = False
         gameOn = True

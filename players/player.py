@@ -18,7 +18,7 @@ class Player():
     def login(self, code, name):
         self.name = name
         options = Options()
-        options.headless = True
+        options.headless = False
         self.driver = Firefox(options=options)
         self.driver.get("https://jackbox.tv/")
         while(not self.enterDetails(code, name)):

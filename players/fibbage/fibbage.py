@@ -96,6 +96,12 @@ class FibbagePlayer(Player):
 
 
 class FibbageXL(FibbagePlayer):
+    def details():
+        return {
+            "name": "Fibbage XL",
+            "pack": "JackBox Party Pack 1"
+        }
+    
     def play(self):
         gameOn = True
         while(gameOn):
@@ -113,6 +119,13 @@ class FibbageXL(FibbagePlayer):
 
 
 class Fibbage2(FibbagePlayer):
+
+    def details():
+        return {
+            "name": "Fibbage 2",
+            "pack": "JackBox Party Pack 2"
+        }
+
     def play(self):
         gameOn = True
         gameStarted = False

@@ -21,8 +21,6 @@ FILE_PATH = realpath(__file__)
 with open(f"{FILE_PATH}/../../../resources/quips.txt", "r") as quips:
     ANSWERS = quips.read().splitlines()
 
-print(ANSWERS[0])
-
 class QuiplashPlayer(Player):
 
     def __init__(self, code, name):
@@ -72,6 +70,13 @@ class QuiplashPlayer(Player):
 
 
 class QuiplashXL(QuiplashPlayer):
+
+    def details():
+        return {
+            "name": "Quiplash XL",
+            "pack": "JackBox Party Pack 2"
+        }
+
     def play(self):
         gameOn = True
         gameStarted = False
@@ -90,7 +95,72 @@ class QuiplashXL(QuiplashPlayer):
             sleep(5)
 
 
+class Quiplash2(QuiplashPlayer):
+
+    def details():
+        return {
+            "name": "Quiplash 2",
+            "pack": "JackBox Party Pack 3"
+        }
+
+    def checkForQuestion(self):
+        coinFlip = random.randint(0,1)
+        if(coinFlip):
+            self.checkForSafetyQuip()
+        else:
+            super().checkForQuestion()
+    
+    def checkForSafetyQuip(self):
+        try:
+            safetyQuip = self.getDisplayedElements(id="quiplash-submit-safetyquip")
+            if(len(safetyQuip) == 1):
+                safetyQuip[0].click()
+                return True
+        except: 
+            pass
+
+        return False
+    
+    def checkForVote(self):
+        try:
+            votes = self.getDisplayedElements(className="quiplash2-vote-button")
+            if(len(votes) == 2):
+                random.choice(votes).click()
+                return True
+        except:
+            pass
+
+        return False
+
+    def play(self):
+        gameOn = True
+        gameStarted = False
+        while(gameOn):
+            if not gameStarted:
+                self.checkForEveryoneIn("quiplash-startgame")
+            
+            if self.checkForQuestion() or self.checkForVote():
+                gameStarted = True
+                continue
+
+            if gameStarted:
+                super().checkForQuestion()
+
+            if self.checkForDisconnected() or self.checkForPlayAgain():
+                gameOn = False
+                self.driver.quit()
+
+            sleep(5)
+
+
 class Quiplash3(QuiplashPlayer):
+
+    def details():
+        return {
+            "name": "Quiplash 3",
+            "pack": "JackBox Party Pack 7"
+        }
+
     def checkForEveryoneIn(self, elementClass):
         if(len(self.getDisplayedElements(className=elementClass)) == 1):
         #if(len(self.getActiveButtonsByClass(elementClass)) == 1):

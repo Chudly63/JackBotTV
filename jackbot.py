@@ -8,7 +8,7 @@ Python bot that can play a game of Jackbox using Selenium
 
 
 from players.guesspionage.guesspionage import Guesspionage
-from players.quiplash.quiplash import Quiplash3, QuiplashXL
+from players.quiplash.quiplash import Quiplash2, Quiplash3, QuiplashXL
 from players.fibbage.fibbage import FibbageXL, Fibbage2
 from threading import Thread
 import random
@@ -33,6 +33,7 @@ ROBOT_NAMES = [
 
 PLAYER_CLASSES = [
     QuiplashXL,
+    Quiplash2,
     Quiplash3,
     FibbageXL,
     Fibbage2,
@@ -47,7 +48,7 @@ PLAYER_THREADS = []
 
 gameSelectPrompt = "Options:"
 for i in range(1, len(PLAYER_CLASSES)+1):
-    gameSelectPrompt += f"\n{i}. {PLAYER_CLASSES[i-1].__name__}"
+    gameSelectPrompt += f"\n{i}. {PLAYER_CLASSES[i-1].details()['name']}\t\t{PLAYER_CLASSES[i-1].details()['pack']}"
 gameSelectPrompt += "\nWhat game are we playing? "
 
 gameSelect = int(input(gameSelectPrompt))
