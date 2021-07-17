@@ -88,3 +88,114 @@ class QuiplashXL(QuiplashPlayer):
                 self.driver.quit()
 
             sleep(5)
+
+
+class Quiplash3(QuiplashPlayer):
+    def checkForEveryoneIn(self, elementClass):
+        if(len(self.getDisplayedElements(className=elementClass)) == 1):
+        #if(len(self.getActiveButtonsByClass(elementClass)) == 1):
+            input("=== Press enter to start the game! ===\n")
+            self.getDisplayedElements(className=elementClass)[0].click()
+            #self.getActiveButtonsByClass(elementClass)[0].click()
+            return True
+        
+        return False
+
+    def checkForQuestion(self):
+        try:
+            choices = self.getDisplayedElements(className="choice-button", attributes=[("data-action", "choose")])
+            #choices = self.getDisplayedElementsByClassNameAndAttributeValue("choice-button", "data-action", "choose")
+            if(len(choices) == 2):
+                random.choice(choices).click()
+                return True
+        except:
+            pass
+
+        return False
+
+    def checkForSafetyQuip(self):
+        try:
+            safetyQuip = self.getDisplayedElements(className="choice-button", attributes=[("data-index", "safetyQuip")])
+            #safetyQuip = self.getDisplayedElementsByClassNameAndAttributeValue("choice-button", "data-index", "safetyQuip")
+            if(len(safetyQuip) == 1):
+                safetyQuip[0].click()
+                return True
+        except:
+            pass
+
+        return False
+
+    def checkForPlayAgain(self):
+        try:
+            samePlayers = self.getDisplayedElements(className="choice-button", attributes=[("data-action", "PostGame_Continue")])
+            #samePlayers = self.getDisplayedElementsByClassNameAndAttributeValue("choice-button", "data-action", "PostGame_Continue")
+            if(len(samePlayers) == 1):
+                if ("Y" in input("Play again?").upper()):
+                    samePlayers[0].click()
+                    return False
+                else:
+                    newPlayers = self.getDisplayedElements(className="choice-button", attributes=[("data-action", "PostGame_NewGame")])
+                    #newPlayers = self.getDisplayedElementsByClassNameAndAttributeValue("choice-button", "data-action", "PostGame_NewGame")
+                    if(len(newPlayers) > 0):
+                        newPlayers[0].click()
+                        return True
+        except:
+            pass
+
+        return False
+
+
+    def isCharacterSelected(self):
+        try:
+            return len(self.getDisplayedElements(id="playericon")) > 0
+            #return self.driver.find_element_by_id("playericon").is_displayed()
+        except:
+            return False
+
+    def selectCharacter(self):
+        while(not self.isCharacterSelected()):
+            try:
+                random.choice(self.getDisplayedElements(className="characters")).click()
+                #random.choice(self.getActiveButtonsByClass("characters")).click()
+            except:
+                continue
+
+    def checkForThripLash(self):
+        try:
+            textAreas = self.getDisplayedElements(id="input-text-textarea")
+            if(len(textAreas) == 3):
+                for textArea in textAreas:
+                    textArea.clear()
+                    response = None
+                    while(response == None or len(response) > 30):
+                        response = random.choice(ANSWERS)
+                    textArea.send_keys(response)
+                
+                self.getDisplayedElements(className="choice-button", attributes=[("data-action","submit")])[0].click()
+                return True
+        except:
+            pass
+
+        return False
+
+
+    def play(self):
+        self.selectCharacter()
+        gameOn = True
+        gameStarted = False
+        while(gameOn):
+            if not gameStarted: 
+                self.checkForEveryoneIn("vipStart")
+
+            if self.checkForQuestion() or self.checkForSafetyQuip():
+                gameStarted = True
+                continue
+            
+            if gameStarted:
+                self.checkForThripLash()
+
+            if self.checkForDisconnected() or self.checkForPlayAgain():
+                gameOn = False
+                self.driver.quit()
+
+            sleep(5)

@@ -146,7 +146,7 @@ class Voter(Player):
 
     def getGuessPercentage(self):
         try:
-            elements = self.driver.find_elements_by_class_name("pollposition-text.question-text")
+            elements = self.getDisplayedElements(className="pollposition-text.question-text")
             for element in elements:
                 if match("^.*said \d+%.*$", element.text):
                     numbers = [int(s) for s in findall(r'\b\d+\b', element.text)]
@@ -160,11 +160,10 @@ class Voter(Player):
 
     def voteFor(self, vote):
         try:
-            buttons = self.getActiveButtonsByClass("pollposition-high-low-button")
-            for button in buttons:
-                if button.get_attribute("data-choice")==vote:
-                    button.click()
-                    return True
+            buttons = self.getDisplayedElements(className="pollposition-high-low-button", attributes=[("data-choice", vote)])
+            if(len(buttons) == 1):
+                buttons[0].click()
+                return True
         except Exception as e:
             print(f"Vote For {e}")
             pass
@@ -173,7 +172,7 @@ class Voter(Player):
 
     def areMuchOptionsAvailable(self):
         try:
-            return len(self.getActiveButtonsByClass("pollposition-choice-button")) == 4
+            return len(self.getDisplayedElements(className="pollposition-choice-button")) == 4
         except:
             return False
 
@@ -184,7 +183,7 @@ class RandomVoter(Voter):
         return "clicks the first button they see"
 
     def makeVote(self):
-        self.clickRandom("pollposition-high-low-button")
+        return self.clickRandom("pollposition-high-low-button")
 
 
 #Votes for the option with the highest probability of being correct
@@ -260,9 +259,9 @@ class RouletteVoter(Voter):
         percentage = self.getGuessPercentage()
         if(percentage == None):
             return False
-        elif(spin + 15 < percentage):
+        elif(spin + 15 < percentage and self.areMuchOptionsAvailable()):
             self.voteFor("Much_Lower")
-        elif(spin - 15 > percentage):
+        elif(spin - 15 > percentage and self.areMuchOptionsAvailable()):
             self.voteFor("Mush_Higher")
         elif(spin < percentage):
             self.voteFor("Lower")

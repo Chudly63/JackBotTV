@@ -56,24 +56,42 @@ class Player():
 
         return False
 
+    def filterElementsByAttributeValue(self, elements, attributeName, attributeValue):
+        filteredElements = []
+        for element in elements:
+            if element.get_attribute(attributeName) == attributeValue:
+                filteredElements.append(element)
 
-    def getActiveButtonsByClass(self, buttonClass):
+        return filteredElements
+
+    def getDisplayedElements(self, id=None, className=None, attributes=None):
         try:
-            activeButtons = []
-            buttons = self.driver.find_elements_by_class_name(buttonClass)
-            for button in buttons:
-                if button.is_enabled() and button.is_displayed():
-                    activeButtons.append(button)
-            return activeButtons
-        except Exception as e:
+            displayedElements = []
+            elements = []
+            if(id):
+                elements = self.driver.find_elements_by_id(id)
+            if(className):
+                elements.extend(self.driver.find_elements_by_class_name(className))
+            for element in elements:
+                if element.is_displayed():
+                    displayedElements.append(element)
+
+            if(attributes):
+                for attribute in attributes:
+                    if isinstance(attribute, tuple):
+                        displayedElements = self.filterElementsByAttributeValue(displayedElements, attribute[0], attribute[1])
+
+            return displayedElements
+        except:
             pass
+
         return []
 
     #Gets a list of buttons with the class name `buttonClass`
     #If the list is not empty, and the buttons are enabled/displayed, click a random one
     def clickRandom(self, buttonClass):
         try:
-            buttons = self.getActiveButtonsByClass(buttonClass)
+            buttons = self.getDisplayedElements(className=buttonClass)
             if(len(buttons) > 0):
                 random.choice(buttons).click()
                 return True

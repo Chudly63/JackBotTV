@@ -61,11 +61,10 @@ class GuesspionagePlayer(Player):
     def checkForCharacterSelect(self, preference=None):
         if preference:
             try:
-                characterButtons = self.getActiveButtonsByClass("pollposition-character-button")
-                for button in characterButtons:
-                    if button.get_attribute("aria-label") == preference.lower():
-                        button.click()
-                        return True
+                characterButtons = self.getDisplayedElements(className="pollposition-character-button", attributes=[("aria-label", preference.lower())])
+                if(len(characterButtons > 0)):
+                    characterButtons[0].click()
+                    return True
             except Exception as e:
                 pass
         else:
@@ -75,7 +74,7 @@ class GuesspionagePlayer(Player):
 
     def checkForFinalRound(self):
         try:
-            choices = self.getActiveButtonsByClass("pollposition-choice-button")
+            choices = self.getDisplayedElements(className="pollposition-choice-button")
             if(len(choices) > 4):
                 random.choice(choices).click()
                 return True
